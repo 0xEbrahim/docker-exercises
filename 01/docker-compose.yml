@@ -1,33 +1,30 @@
-version: "2.1"
+version: "3.7"
 services:
-  db:
-    image: mongo:3
-    container_name: db
-
-  web:
+  node:
     depends_on:
       - db
     image: node:6.9.1
     container_name: web
-    working_dir: /work
     ports:
-      - "3000:3000"
-    volumes:
-      - .:/work
+      - published: 3000
+      - target: 3000
+    working_dir: /work
     environment:
       - MONGO_IP=db
       - NODE_ENV=${NODE_ENV}
-    command: node /work/server.js
+    command: node /work/servier/js
+  mongo:
+    image: mongo:3
+    container_name: db
 
   test:
     depends_on:
-      - db
       - web
+      - db
     image: node:6.9.1
-    container_name: test
     working_dir: /work
     volumes:
-      - ..:/work
+      - ../work
     environment:
       - NODE_ENV=${NODE_ENV}
-    command: curl -s http://web:3000
+    command: ["curl", "-s", "http://web:3000"]
